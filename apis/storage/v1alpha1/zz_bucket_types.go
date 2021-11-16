@@ -47,10 +47,6 @@ type BucketObservation struct {
 
 type BucketParameters struct {
 
-	// Enables Bucket Policy Only access to a bucket.
-	// +kubebuilder:validation:Optional
-	BucketPolicyOnly *bool `json:"bucketPolicyOnly,omitempty" tf:"bucket_policy_only,omitempty"`
-
 	// The bucket's Cross-Origin Resource Sharing (CORS) configuration.
 	// +kubebuilder:validation:Optional
 	Cors []CorsParameters `json:"cors,omitempty" tf:"cors,omitempty"`
@@ -75,8 +71,8 @@ type BucketParameters struct {
 	LifecycleRule []LifecycleRuleParameters `json:"lifecycleRule,omitempty" tf:"lifecycle_rule,omitempty"`
 
 	// The Google Cloud Storage location
-	// +kubebuilder:validation:Optional
-	Location *string `json:"location,omitempty" tf:"location,omitempty"`
+	// +kubebuilder:validation:Required
+	Location *string `json:"location" tf:"location,omitempty"`
 
 	// The bucket's Access & Storage Logs configuration.
 	// +kubebuilder:validation:Optional

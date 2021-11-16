@@ -37,7 +37,7 @@ var skipList = []string{
 	"google_access_context_manager_service_perimeters$",
 }
 
-var includeList = []string{
+/*var includeList = []string{
 	// Storage
 	"google_storage_bucket$",
 
@@ -50,7 +50,7 @@ var includeList = []string{
 	"google_compute_managed_ssl_certificate$",
 	"google_compute_router$",
 	"google_compute_router_nat$",
-}
+}*/
 
 // GetProvider returns provider configuration
 func GetProvider() *tjconfig.Provider {
@@ -108,7 +108,7 @@ func GetProvider() *tjconfig.Provider {
 		tjconfig.WithGroupSuffix(".gcp.tf.crossplane.io"),
 		tjconfig.WithShortName("tfgcp"),
 		// Comment out the following line to generate all resources.
-		tjconfig.WithIncludeList(includeList),
+		//tjconfig.WithIncludeList(includeList),
 		tjconfig.WithSkipList(skipList))
 
 	for _, configure := range []func(provider *tjconfig.Provider){
