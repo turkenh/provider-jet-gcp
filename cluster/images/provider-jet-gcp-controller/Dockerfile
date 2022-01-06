@@ -1,3 +1,18 @@
+FROM golang:1.16-alpine AS build
+
+RUN apk --no-cache add ca-certificates bash git make
+
+RUN mkdir -p $GOPATH/src/github.com/hashicorp && \
+    cd $GOPATH/src/github.com/hashicorp && \
+    git clone https://github.com/hashicorp/terraform-provider-google.git && \
+    cd terraform-provider-google && \
+    git checkout 34b50d4eec59044f9c74f2fe72c4e3c79ccc2a2f && \
+    make build
+
+WORKDIR $GOPATH/src/github.com/hashicorp/terraform-provider-google
+
+RUN make build
+
 FROM BASEIMAGE
 RUN apk --no-cache add ca-certificates bash
 
@@ -21,18 +36,23 @@ ENV TF_FORK 0
 
 RUN mkdir -p ${PLUGIN_DIR}
 
-ADD https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_${ARCH}.zip /tmp
-ADD ${TERRAFORM_PROVIDER_DOWNLOAD_URL_PREFIX}/${TERRAFORM_PROVIDER_DOWNLOAD_NAME}_${TERRAFORM_PROVIDER_VERSION}_linux_${ARCH}.zip /tmp
-
 ADD terraformrc.hcl ${TF_CLI_CONFIG_FILE}
 
+### To consume prebuilt binary
+COPY --from=build /go/bin/terraform-provider-google "${PLUGIN_DIR}/terraform-provider-google_${ARCH}_x5"
+
+### To consume binary from hashicorp registry
+ADD https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_${ARCH}.zip /tmp
+#ADD ${TERRAFORM_PROVIDER_DOWNLOAD_URL_PREFIX}/${TERRAFORM_PROVIDER_DOWNLOAD_NAME}_${TERRAFORM_PROVIDER_VERSION}_linux_${ARCH}.zip /tmp
 RUN unzip /tmp/terraform_${TERRAFORM_VERSION}_linux_${ARCH}.zip -d /usr/local/bin \
   && chmod +x /usr/local/bin/terraform \
   && rm /tmp/terraform_${TERRAFORM_VERSION}_linux_${ARCH}.zip \
-  && unzip /tmp/${TERRAFORM_PROVIDER_DOWNLOAD_NAME}_${TERRAFORM_PROVIDER_VERSION}_linux_${ARCH}.zip -d ${PLUGIN_DIR} \
-  && chmod +x ${PLUGIN_DIR}/* \
-  && rm /tmp/${TERRAFORM_PROVIDER_DOWNLOAD_NAME}_${TERRAFORM_PROVIDER_VERSION}_linux_${ARCH}.zip \
   && chown -R ${USER_ID}:${USER_ID} /terraform
+
+#  && unzip /tmp/${TERRAFORM_PROVIDER_DOWNLOAD_NAME}_${TERRAFORM_PROVIDER_VERSION}_linux_${ARCH}.zip -d ${PLUGIN_DIR} \
+#  && chmod +x ${PLUGIN_DIR}/* \
+#  && rm /tmp/${TERRAFORM_PROVIDER_DOWNLOAD_NAME}_${TERRAFORM_PROVIDER_VERSION}_linux_${ARCH}.zip \
+
 # End of - Setup Terraform environment
 
 ADD provider /usr/local/bin/crossplane-provider
