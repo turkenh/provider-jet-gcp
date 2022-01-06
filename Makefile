@@ -6,7 +6,7 @@ PROJECT_REPO := github.com/crossplane-contrib/$(PROJECT_NAME)
 
 export TERRAFORM_VERSION := 1.0.11
 export TERRAFORM_PROVIDER_SOURCE := hashicorp/google
-export TERRAFORM_PROVIDER_VERSION := 4.0.0
+export TERRAFORM_PROVIDER_VERSION := 4.5.0
 export TERRAFORM_PROVIDER_DOWNLOAD_NAME := terraform-provider-google
 export TERRAFORM_PROVIDER_DOWNLOAD_URL_PREFIX := https://releases.hashicorp.com/terraform-provider-google/4.0.0
 
@@ -49,7 +49,7 @@ GO111MODULE = on
 # ====================================================================================
 # Setup Images
 
-DOCKER_REGISTRY := crossplane
+DOCKER_REGISTRY ?= crossplane
 IMAGES = provider-jet-gcp provider-jet-gcp-controller
 -include build/makelib/image.mk
 
