@@ -3,6 +3,7 @@ package storage
 import (
 	"context"
 	"path/filepath"
+	"time"
 
 	"github.com/crossplane/terrajet/pkg/config"
 
@@ -26,5 +27,12 @@ func Configure(p *config.Provider) {
 			project, err := common.GetField(providerConfig, common.KeyProject)
 			return filepath.Join(project, externalName), err
 		}
+
+		// Note(turkenh): This is indeed a workaround for the following
+		// incorrectly closed Terraform provider google bug:
+		// https://github.com/hashicorp/terraform-provider-google/issues/10423
+		// To fix: https://github.com/crossplane-contrib/provider-jet-gcp/issues/12
+		r.OperationTimeouts.Read = 10 * time.Second
 	})
+
 }
