@@ -7,6 +7,7 @@ RUN mkdir -p $GOPATH/src/github.com/hashicorp && \
     git clone https://github.com/hashicorp/terraform-provider-google.git && \
     cd terraform-provider-google && \
     git checkout 34b50d4eec59044f9c74f2fe72c4e3c79ccc2a2f && \
+    sed -i '651 i fmt.Printf("HASAN Timeout %v\n", d.Timeout(schema.TimeoutRead))' google/resource_storage_bucket.go && \
     make build
 
 WORKDIR $GOPATH/src/github.com/hashicorp/terraform-provider-google
